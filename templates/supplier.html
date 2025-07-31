@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>{{ supplier_name }}</h1>
+
+  <div class="product-container">
+    <div class="product-grid">
+      {% for p in products %}
+        <div class="product-card{% if p.is_new %} new{% endif %}{% if p.last_change_recent %} changed{% endif %}{% if p.is_removed %} removed{% endif %}">
+          <img src="{{ p.img_url }}" alt="{{ p.name }}">
+          <div class="product-info">
+            <h3>{{ p.name }}</h3>
+            <div class="product-code">{{ p.code }}</div>
+            <div class="product-price">{{ p.price }} </div>
+
+            {% if p.is_new %}
+              <div class="badge badge-new">Yeni Ürün</div>
+            {% endif %}
+
+            {% if p.last_change_recent %}
+              <div class="prev-price">Önceki: {{ p.prev_price }} ₺</div>
+              <div class="badge badge-changed">Fiyat Değişti: {{ p.last_change_date[:10] }}</div>
+            {% endif %}
+
+            {% if p.is_removed %}
+              <div class="badge badge-removed">Kaldırıldı: {{ p.removed_date[:10] }}</div>
+            {% endif %}
+
+          
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+{% endblock %}

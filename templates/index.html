@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="sticky-header">
+  <h1>Genel Bakış</h1>
+
+  {# Flash mesajları #}
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="alerts">
+        {% for category, msg in messages %}
+          <div class="alert alert-{{ category }}">{{ msg }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <!-- Tedarikçi Ekleme Formu -->
+  <form method="POST" action="{{ url_for('main.add_supplier') }}" class="url-form">
+    <input type="text" name="url" placeholder="DMO tedarikçi sayfası linki girin" required>
+    <button type="submit">Tedarikçi Ekle</button>
+  </form>
+</div>
+
+<section>
+  <h2>Yeni Ürünler</h2>
+
+    {% if new_products %}
+      <div class="product-grid">
+        {% for p in new_products %}
+          <div class="product-card new">
+            <img src="{{ p.img_url }}" alt="">
+            <div class="product-info">
+              <h3>{{ p.name }}</h3>
+              <div class="product-code">{{ p.code }} – {{ p.supplier }}</div>
+              <div class="product-price">Fiyat: {{ p.price }} </div>
+              <div class="badge badge-new">Yeni Ürün</div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p>Yeni ürün yok.</p>
+    {% endif %}
+  </section>
+
+  <section>
+    <h2>Satıştan Kaldırılanlar</h2>
+    {% if removed_products %}
+      <div class="product-grid">
+        {% for p in removed_products %}
+          <div class="product-card removed">
+            <img src="{{ p.img_url }}" alt="">
+            <div class="product-info">
+              <h3>{{ p.name }}</h3>
+              <div class="product-code">{{ p.code }} – {{ p.supplier }}</div>
+              <div class="badge badge-removed">Kaldırıldı {{ p.removed_date[:10] }}</div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p>Hiç ürün kaldırılmadı.</p>
+    {% endif %}
+  </section>
+
+  <section>
+    <h2>Fiyatı Değişenler</h2>
+    {% if changed_products %}
+      <div class="product-grid">
+        {% for p in changed_products %}
+          <div class="product-card changed">
+            <img src="{{ p.img_url }}" alt="">
+            <div class="product-info">
+              <h3>{{ p.name }}</h3>
+              <div class="product-code">{{ p.code }} – {{ p.supplier }}</div>
+              <div class="badge badge-changed">Değişti {{ p.last_change_date[:10] }}</div>
+              <div class="prev-price">Önceki: {{ p.prev_price }} ₺</div>
+              <div class="product-price">Yeni Fiyat: {{ p.price }} </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p>Fiyat değişikliği yok.</p>
+    {% endif %}
+  </section>
+{% endblock %}

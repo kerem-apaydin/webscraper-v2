@@ -1,0 +1,305 @@
+body {
+  overflow-x: hidden;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  margin-right: 260px;
+  padding: 20px;
+  width: calc(100% - 260px);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.product-container {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 10px; 
+}
+
+.url-form {
+  margin-bottom: 20px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.url-form input[type="search"],
+.url-form input[type="text"] {
+  flex: 1 1 200px;
+  padding: 8px;
+  font-size: 14px;
+}
+
+.url-form button {
+  padding: 8px 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+/* Container ayarları */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+  gap: 20px;
+  padding: 0;
+  margin: 0;
+}
+
+/* Kartın genel görünümü */
+.product-card {
+  display: flex;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* Resim bölümü */
+.product-card img {
+  width: 120px;
+  height: 120px;
+  margin-left: 10px;
+  align-self: center;
+  object-fit: contain;
+  background: #f9f9f9;
+  flex-shrink: 0;
+}
+
+/* Product-info’yu sıkıştırılmış bir dikey flex kutusu yapıyoruz */
+.product-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 10px;
+  flex: 1;
+}
+
+/* Başlık iki satır, taşanı gizle */
+.product-info h3 {
+  font-size: 0.95rem;
+  margin: 0 0 4px;
+  line-height: 1.2;
+  max-height: 2.4em;    /* yaklaşık 2 satır */
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Ürün kodu */
+.product-info .product-code {
+  font-size: 0.75rem;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+/* Fiyat */
+.product-info .product-price {
+  font-size: 0.85rem;
+  color: #007bff;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+/* Son değişim bilgisi için kompakt stil */
+.product-info .change-info {
+  font-size: 0.75rem;
+  color: #555;
+  margin: 2px 0;
+  line-height: 1.2;
+  max-height: 2.4em;    /* 2 satırı geçme */
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Prev-price etiketine italik vurgu */
+.product-info .prev-price {
+  font-style: italic;
+  font-size: 0.75rem;
+  color: #888;
+}
+
+/* Detail butonunu kartın en altına sabitle */
+.product-info .detail-btn {
+  margin-top: 6px;
+  align-self: flex-start;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+}
+
+.btn2 {
+  display: block;
+  position: absolute;
+  text-align: center;
+  padding: 10px;
+  background-color: #007bff;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 5px;
+  font-size: 14px;
+  width: 150px;
+}
+
+/* aktif tedarikçi butonunu belirginleştir */
+
+
+/* hover efekt */
+.btn2:hover {
+  background-color: #0056b3;
+}
+
+        
+
+.sidebar {
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 200px;
+  padding: 20px;
+  background-color: #f4f4f4;
+  border-left: 1px solid #ccc;
+  height: 100%;
+  z-index: 1000;
+  overflow-y: auto;
+}
+
+.sidebar h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+
+.sidebar .btn:hover {
+  background-color: #0056b3;
+}
+
+.price-up {
+  padding-bottom: 10px;
+  color: red;
+  font-weight: italic;
+}
+
+.price-down {
+  padding-bottom: 10px;
+  color: green;
+  font-weight: italic;
+}
+
+.price-neutral {
+  padding-bottom: 10px;
+  color: #444;
+  font-style: italic;
+}
+
+/* sidebar başlık altındaki listeyi kaldırıp buton grubuna dönüştürüyoruz */
+.sidebar .supplier-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+/* zaten var olan .btn tanımını buton görünümü için kullanıyoruz */
+.btn {
+  display: block;
+  text-align: center;
+  padding: 10px;
+  background-color: #007bff;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+/* aktif tedarikçi butonunu belirginleştir */
+.active-btn {
+  background-color: #0056b3;
+}
+
+/* hover efekt */
+.btn:hover {
+  background-color: #0056b3;
+}
+
+/* Yeni ürünler için hafif yeşil */
+.product-card.new {
+  background-color: #e8f5e9;
+}
+
+/* Silinen ürünler için hafif kırmızı-gri */
+.product-card.removed {
+  background-color: #ffebee;
+  opacity: 0.7;
+}
+
+/* Badge stili */
+.badge {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  margin-bottom: 6px;
+}
+
+.badge-new {
+  background-color: #66bb6a;
+  color: white;
+}
+
+.badge-removed {
+  background-color: #ef5350;
+  color: white;
+}
+
+/* static/style.css */
+.product-card.changed { background-color: #fff3e0; }
+.badge-changed {
+  background-color: #ffa726;
+  color: white;
+}
+
+.product-price strong {
+  font-weight: normal;
+}
+
+.prev-price strong {
+  font-weight: normal;
+}
+
+.product-card {
+  position: relative;
+  overflow: hidden;
+}
+.product-card.new::before,
+.product-card.changed::before,
+.product-card.removed::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 8px;
+  height: 100%;
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+.product-card.new::before {
+  background-color: #66bb6a;
+}
+.product-card.changed::before {
+  background-color: #ffa726;
+}
+.product-card.removed::before {
+  background-color: #ef5350;
+}

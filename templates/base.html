@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8">
+    <title>Web Scraper</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  </head>
+  <body>
+    <div class="sidebar">
+      <div class="supplier-buttons">
+        <a
+          href="{{ url_for('main.index') }}"
+          class="btn {% if active_idx is none %}active-btn{% endif %}"
+        >
+          Ana Sayfa
+        </a>
+      </div>
+      <h3>Tedarikçiler</h3>
+      <div class="supplier-buttons">
+
+        {% for s in suppliers %}
+          <a
+            href="{{ url_for('main.show_supplier', idx=loop.index0, slug=s.slug) }}"
+            class="btn {% if loop.index0 == active_idx %}active-btn{% endif %}"
+          >
+            {{ s.name }}
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="container">
+      {% block content %}{% endblock %}
+    </div>
+  </body>
+</html>
