@@ -109,25 +109,115 @@ def add_supplier():
 @bp.route('/supplier/<int:idx>/<slug>', methods=['GET'])
 def show_supplier(idx, slug):
     suppliers = load_suppliers()
-    if idx<0 or idx>=len(suppliers):
-        flash("Geçersiz seçim.","warning")
+
+    # 1) bounds check
+    if idx < 0 or idx >= len(suppliers):
+        flash("Geçersiz seçim.", "warning")
         return redirect(url_for('main.index'))
+
     sel = suppliers[idx]
-    if sel['slug']!=slug:
-        return redirect(url_for('main.show_supplier',idx=idx,slug=sel['slug']))
+    if sel['slug'] != slug:
+        return redirect(url_for('main.show_supplier', idx=idx, slug=sel['slug']))
 
-    path = os.path.join(DATA_DIR,sel['json_file'])
-    try:
-        old = json.load(open(path,encoding='utf-8')).get('products',[])
-    except:
-        old = []
-    try:
-        _,scraped = Scraper(sel['url']).scrape_all()
-        merged = diff_products(old,scraped)
-        json.dump({'supplier':sel['name'],'url':sel['url'],'products':merged},open(path,'w',encoding='utf-8'),ensure_ascii=False,indent=2)
-        prods = merged
-    except Exception as e:
-        flash(f"Güncellenirken hata: {e}","danger")
-        prods = old
+    json_path = os.path.join(DATA_DIR, sel['json_file'])
 
-    return render_template('supplier.html',suppliers=suppliers,active_idx=idx,supplier_name=sel['name'],products=prods)
+    # 2) Load existing JSON
+    try:
+        with open(json_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        old_products = data.get('products', [])
+    except Exception:
+        old_products = []
+
+    # 3) Decide whether to scrape (only when no filter param)
+    filter_type = request.args.get('filter')  # None or 'new'/'changed'/'removed'
+    if not filter_type:
+        # full scrape+diff
+        try:
+            _, scraped = Scraper(sel['url']).scrape_all()
+            merged = diff_products(old_products, scraped)
+
+            # overwrite JSON cache
+            with open(json_path, 'w', encoding='utf-8') as f:
+                json.dump({
+                    'supplier': sel['name'],
+                    'url':      sel['url'],
+                    'products': merged
+                }, f, ensure_ascii=False, indent=2)
+
+            products_to_show = merged
+        except Exception as e:
+            flash(f"Güncellenirken hata: {e}", "danger")
+            products_to_show = old_products
+    else:
+        # just use the cache on filter clicks
+        products_to_show = old_products
+
+    # 4) Now apply your Python‐side filter
+    if filter_type == 'new':
+        products_to_show = [p for p in products_to_show if p.get('is_new')]
+    elif filter_type == 'changed':
+        products_to_show = [p for p in products_to_show if p.get('last_change_recent')]
+    elif filter_type == 'removed':
+        products_to_show = [p for p in products_to_show if p.get('is_removed')]
+    # else filter_type is None or 'all' → leave full list
+
+    return render_template(
+        'supplier.html',
+        suppliers=suppliers,
+        active_idx=idx,
+        supplier_name=sel['name'],
+        products=products_to_show
+    )
+
+
+
+@bp.route('/product/<product_code>')
+def product_detail(product_code):
+    suppliers = load_suppliers()
+
+    # 1) Ürünü ve ana tedarikçiyi bul
+    found = None
+    active_idx = None
+    for idx, s in enumerate(suppliers):
+        path = os.path.join(DATA_DIR, s['json_file'])
+        with open(path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        for p in data.get('products', []):
+            if p['code'] == product_code:
+                found = p.copy()
+                active_idx = idx
+                break
+        if found:
+            break
+
+    if not found:
+        flash("Ürün bulunamadı.", "warning")
+        return redirect(url_for('main.index'))
+
+    # 2) Alternatif tedarikçileri topla (kaldırılmışları atla)
+    alt_suppliers = []
+    for idx2, s2 in enumerate(suppliers):
+        if idx2 == active_idx:
+            continue
+        path2 = os.path.join(DATA_DIR, s2['json_file'])
+        with open(path2, 'r', encoding='utf-8') as f2:
+            data2 = json.load(f2)
+        for p2 in data2.get('products', []):
+            if p2.get('code') == product_code and not p2.get('is_removed'):
+                alt_suppliers.append({
+                    'supplier': s2['name'],
+                    'price':    p2['price'],
+                    'link':     url_for('main.show_supplier', idx=idx2, slug=s2['slug'])
+                })
+                break
+
+    # 3) Şablona gönder
+    return render_template(
+        'product_detail.html',
+        suppliers=suppliers,
+        active_idx=active_idx,
+        supplier_name=suppliers[active_idx]['name'],
+        product=found,
+        alt_suppliers=alt_suppliers
+    )

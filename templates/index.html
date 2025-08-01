@@ -15,7 +15,7 @@
     {% endif %}
   {% endwith %}
 
-  <!-- Tedarikçi Ekleme Formu -->
+  
   <form method="POST" action="{{ url_for('main.add_supplier') }}" class="url-form">
     <input type="text" name="url" placeholder="DMO tedarikçi sayfası linki girin" required>
     <button type="submit">Tedarikçi Ekle</button>
@@ -28,7 +28,7 @@
     {% if new_products %}
       <div class="product-grid">
         {% for p in new_products %}
-          <div class="product-card new">
+          <a href="{{ url_for('main.product_detail', product_code=p.code) }}" class="product-card new">
             <img src="{{ p.img_url }}" alt="">
             <div class="product-info">
               <h3>{{ p.name }}</h3>
@@ -36,7 +36,7 @@
               <div class="product-price">Fiyat: {{ p.price }} </div>
               <div class="badge badge-new">Yeni Ürün</div>
             </div>
-          </div>
+          </a>
         {% endfor %}
       </div>
     {% else %}
@@ -49,14 +49,14 @@
     {% if removed_products %}
       <div class="product-grid">
         {% for p in removed_products %}
-          <div class="product-card removed">
+          <a href="{{ url_for('main.product_detail', product_code=p.code) }}" class="product-card removed">
             <img src="{{ p.img_url }}" alt="">
             <div class="product-info">
               <h3>{{ p.name }}</h3>
               <div class="product-code">{{ p.code }} – {{ p.supplier }}</div>
               <div class="badge badge-removed">Kaldırıldı {{ p.removed_date[:10] }}</div>
             </div>
-          </div>
+          </a>
         {% endfor %}
       </div>
     {% else %}
@@ -69,7 +69,7 @@
     {% if changed_products %}
       <div class="product-grid">
         {% for p in changed_products %}
-          <div class="product-card changed">
+          <a href="{{ url_for('main.product_detail', product_code=p.code) }}" class="product-card changed">
             <img src="{{ p.img_url }}" alt="">
             <div class="product-info">
               <h3>{{ p.name }}</h3>
@@ -78,7 +78,7 @@
               <div class="prev-price">Önceki: {{ p.prev_price }} ₺</div>
               <div class="product-price">Yeni Fiyat: {{ p.price }} </div>
             </div>
-          </div>
+          </a>
         {% endfor %}
       </div>
     {% else %}

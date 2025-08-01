@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="product-detail-container">
+    <!-- Başlık ve Geri Dön -->
+    <div class="detail-header">
+      <a href="{{ url_for('main.show_supplier', idx=active_idx, slug=suppliers[active_idx].slug, no_update=1) }}" class="back-btn"> Geri</a>
+      <h1>{{ supplier_name }} – Ürün Detayı</h1>
+    </div>
+
+    <!-- Detay Kartı -->
+    <div class="product-detail-card">
+      <div class="detail-image">
+        <img src="{{ product.img_url }}" alt="{{ product.name }}">
+      </div>
+      <div class="detail-info">
+        <h2>{{ product.name }}</h2>
+        <p><strong>Kod:</strong> {{ product.code }}</p>
+        <p class="detail-price"><strong>Güncel Fiyat:</strong> {{ product.price }} </p>
+        {% if product.prev_price %}
+          <p class="detail-prev-price"><strong>Önceki Fiyat:</strong> {{ product.prev_price }} </p>
+        {% endif %}
+        {% if product.last_change_recent %}
+          <p class="detail-change-date"><strong>Son Değişim:</strong> {{ product.last_change_date[:10] }}</p>
+        {% endif %}
+        {% if product.is_removed %}
+          <p class="removed-note">Bu ürün kaldırıldı: {{ product.removed_date[:10] }}</p>
+        {% endif %}
+        <a href="{{ product.link }}" target="_blank" class="external-btn">Orijinal DMO Sayfasını Aç</a>
+      </div>
+    </div>
+
+    <!-- Alternatif Tedarikçiler -->
+    {% if alt_suppliers %}
+      <section class="alt-suppliers-section">
+        <h2>Bu ürünü satan diğer tedarikçiler</h2>
+        <ul class="alt-suppliers-list">
+          {% for alt in alt_suppliers %}
+            <li>
+              <a href="{{ alt.link }}" class="alt-supplier-link">{{ alt.supplier }}</a>
+              <span class="alt-price">– {{ alt.price }} </span>
+            </li>
+          {% endfor %}
+        </ul>
+      </section>
+    {% endif %}
+  </div>
+{% endblock %}

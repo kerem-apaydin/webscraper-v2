@@ -72,20 +72,28 @@ class Scraper:
         url = self.base_url
         supplier_name = None
         all_products = []
-        seen_urls = set()
+        
+        seen_pages = set()
+        seen_links = set()  # ürün linklerini kaydedeceğimiz küme
 
-        while url and url not in seen_urls:
-            seen_urls.add(url)
+        while url and url not in seen_pages:
+            seen_pages.add(url)
             print(f"Scraping: {url}")
             soup = self.get_soup(url)
 
             if supplier_name is None:
                 supplier_name = self.extract_supplier(soup)
 
+            # Bu sayfadaki ürünleri al
             prods = self.extract_products(soup)
-            all_products.extend(prods)
+            for p in prods:
+                link = p.get('link')
+                # Eğer bu linki daha önce eklemediysek, yeni ürün olarak kaydet
+                if link and link not in seen_links:
+                    seen_links.add(link)
+                    all_products.append(p)
 
-            # Burada current_url olarak url’i veriyoruz
+            # Sonraki sayfa linkini bul
             url = self.get_next_page(soup, url)
 
         return supplier_name, all_products

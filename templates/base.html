@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <title>Web Scraper</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+ 
   </head>
   <body>
     <div class="sidebar">
@@ -17,7 +18,7 @@
       </div>
       <h3>Tedarikçiler</h3>
       <div class="supplier-buttons">
-
+        <!-- tedarikçi butonlarını sıralama fonksiyonu -->
         {% for s in suppliers %}
           <a
             href="{{ url_for('main.show_supplier', idx=loop.index0, slug=s.slug) }}"

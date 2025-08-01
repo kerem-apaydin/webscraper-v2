@@ -303,3 +303,270 @@ body {
 .product-card.removed::before {
   background-color: #ef5350;
 }
+
+
+
+
+
+
+
+
+
+/* ─── Filter Buttons ─────────────────────────────────────────────────────────── */
+.filter-buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.filter-buttons .filter-btn {
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  background: #fafafa;
+  color: #333;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 0.85rem;
+  transition: background 0.2s, border-color 0.2s;
+}
+.filter-buttons .filter-btn:hover {
+  background: #f0f0f0;
+}
+.filter-buttons .filter-btn.active {
+  background: #007bff;
+  color: #fff;
+  border-color: #007bff;
+}
+
+
+
+a.product-card {
+  text-decoration: none; 
+  color: inherit;       
+  display: flex;         
+}
+
+
+a.product-card * {
+  text-decoration: none !important;
+}
+
+
+
+
+
+/* .card-image bölümünü tam ortala */
+.card-image {
+  display: flex;
+  align-items: center;    /* dikey ortalama */
+  justify-content: center;/* yatay ortalama */
+  flex: 0 0 120px;        /* veya sizin istediğiniz sabit genişlik */
+  padding: 8px;
+  
+}
+
+/* img’lerde ekstra margin bırakmıyoruz */
+.card-image img {
+  margin: 0;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+
+
+
+
+
+
+
+
+/* ─── Genel Sayfa Düzeni ───────────────────────────────────────────────────── */
+.product-detail-container {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 0 20px;
+  box-sizing: border-box;
+  font-family: "Segoe UI", Roboto, sans-serif;
+  color: #333;
+}
+
+/* ─── Başlık ve Geri Dön ───────────────────────────────────────────────────── */
+.detail-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.detail-header h1 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin: 0;
+}
+.back-btn {
+  display: inline-block;
+  padding: 6px 12px;
+  background: #f0f0f0;
+  border-radius: 4px;
+  text-decoration: none;
+  color: #555;
+  transition: background 0.2s, color 0.2s;
+}
+.back-btn:hover {
+  background: #e0e0e0;
+  color: #222;
+}
+
+/* ─── Detay Kartı ─────────────────────────────────────────────────────────── */
+.product-detail-card {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 32px;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.07);
+  margin-bottom: 40px;
+}
+@media (max-width: 768px) {
+  .product-detail-card {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ─── Resim Bölümü ─────────────────────────────────────────────────────────── */
+.detail-image {
+  background: #fafafa;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.detail-image img {
+  max-width: 100%;
+  max-height: 500px;
+  object-fit: contain;
+  border-radius: 4px;
+  transition: transform 0.3s;
+}
+.detail-image img:hover {
+  transform: scale(1.02);
+}
+
+/* ─── Bilgi Bölümü ─────────────────────────────────────────────────────────── */
+.detail-info {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px;
+}
+.detail-info h2 {
+  font-size: 1.5rem;
+  margin: 0;
+  color: #222;
+}
+.detail-info p {
+  margin: 4px 0;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+.detail-info .detail-code,
+.detail-info .detail-supplier,
+.detail-info .detail-change-date {
+  font-weight: 500;
+  color: #555;
+}
+.detail-info .detail-price {
+  font-size: 1.25rem;
+  color: #007bff;
+  font-weight: 700;
+}
+.detail-info .detail-prev-price {
+  font-size: 1rem;
+  color: #888;
+  font-style: italic;
+}
+
+/* ─── Badge’ler ─────────────────────────────────────────────────────────────── */
+.detail-badges {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.detail-badges .badge {
+  padding: 4px 8px;
+  font-size: 0.75rem;
+  border-radius: 4px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.badge-new {
+  background: #28a745;
+  color: #fff;
+}
+.badge-changed {
+  background: #fd7e14;
+  color: #fff;
+}
+.badge-removed {
+  background: #dc3545;
+  color: #fff;
+}
+
+/* ─── Orijinal Sayfa Butonu ────────────────────────────────────────────────── */
+.external-btn {
+  margin-top: auto;
+  align-self: start;
+  padding: 10px 20px;
+  background: #007bff;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: background 0.2s ease;
+}
+.external-btn:hover {
+  background: #0056b3;
+}
+
+/* ─── Alternatif Tedarikçiler Bölümü ───────────────────────────────────────── */
+.alt-suppliers-section {
+  background: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+}
+.alt-suppliers-section h2 {
+  font-size: 1.25rem;
+  margin-bottom: 16px;
+  color: #222;
+}
+.alt-suppliers-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.alt-suppliers-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+}
+.alt-suppliers-list li:last-child {
+  border-bottom: none;
+}
+.alt-supplier-link {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+.alt-supplier-link:hover {
+  color: #0056b3;
+}
+.alt-price {
+  font-weight: 600;
+  color: #333;
+}

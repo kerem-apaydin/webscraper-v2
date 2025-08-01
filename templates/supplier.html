@@ -3,33 +3,65 @@
 {% block content %}
   <h1>{{ supplier_name }}</h1>
 
-  <div class="product-container">
-    <div class="product-grid">
+  <!-- Supplier info panel -->
+  <div class="supplier-info">
+    <div class="filter-buttons">
+      <a href="{{ url_for('main.show_supplier', idx=active_idx, slug=suppliers[active_idx].slug, filter='all') }}"
+         class="filter-btn{% if not request.args.get('filter') or request.args.get('filter')=='all' %} active{% endif %}">
+        Tümü ({{ products|length }})
+      </a>
+      <a href="{{ url_for('main.show_supplier', idx=active_idx, slug=suppliers[active_idx].slug, filter='new') }}"
+         class="filter-btn{% if request.args.get('filter')=='new' %} active{% endif %}">
+        Yeni ({{ products|selectattr('is_new')|list|length }})
+      </a>
+      <a href="{{ url_for('main.show_supplier', idx=active_idx, slug=suppliers[active_idx].slug, filter='changed') }}"
+         class="filter-btn{% if request.args.get('filter')=='changed' %} active{% endif %}">
+        Değişen ({{ products|selectattr('last_change_recent')|list|length }})
+      </a>
+      <a href="{{ url_for('main.show_supplier', idx=active_idx, slug=suppliers[active_idx].slug, filter='removed') }}"
+         class="filter-btn{% if request.args.get('filter')=='removed' %} active{% endif %}">
+        Kaldırılan ({{ products|selectattr('is_removed')|list|length }})
+      </a>
+    </div>
+  </div>
+
+  <!-- List.js konteyneri: önce arama sonra liste -->
+  <div id="supplier-products-list">
+    <div class="search-container">
+      <input class="search" placeholder="Ürün ara…" />
+    </div>
+    <div class="product-grid list">
       {% for p in products %}
-        <div class="product-card{% if p.is_new %} new{% endif %}{% if p.last_change_recent %} changed{% endif %}{% if p.is_removed %} removed{% endif %}">
+      <a href="{{ url_for('main.product_detail', product_code=p.code) }}"
+         class="product-card list-item{% if p.is_new %} new{% endif %}{% if p.last_change_recent %} changed{% endif %}{% if p.is_removed %} removed{% endif %}">
+        <div class="card-image">
           <img src="{{ p.img_url }}" alt="{{ p.name }}">
-          <div class="product-info">
-            <h3>{{ p.name }}</h3>
-            <div class="product-code">{{ p.code }}</div>
-            <div class="product-price">{{ p.price }} </div>
-
-            {% if p.is_new %}
-              <div class="badge badge-new">Yeni Ürün</div>
-            {% endif %}
-
-            {% if p.last_change_recent %}
-              <div class="prev-price">Önceki: {{ p.prev_price }} ₺</div>
-              <div class="badge badge-changed">Fiyat Değişti: {{ p.last_change_date[:10] }}</div>
-            {% endif %}
-
-            {% if p.is_removed %}
-              <div class="badge badge-removed">Kaldırıldı: {{ p.removed_date[:10] }}</div>
-            {% endif %}
-
-          
-          </div>
         </div>
+        <div class="product-info">
+          <h3 class="product-name">{{ p.name }}</h3>
+          <div class="product-code">{{ p.code }}</div>
+          <div class="product-price">{{ p.price }} </div>
+          {% if p.is_new %}<div class="badge badge-new">Yeni Ürün</div>{% endif %}
+          {% if p.last_change_recent %}
+            <div class="prev-price">Önceki: {{ p.prev_price }} </div>
+            <div class="badge badge-changed">Fiyat Değişti: {{ p.last_change_date[:10] }}</div>
+          {% endif %}
+          {% if p.is_removed %}
+            <div class="badge badge-removed">Kaldırıldı: {{ p.removed_date[:10] }}</div>
+          {% endif %}
+        </div>
+      </a>
       {% endfor %}
     </div>
   </div>
+
+  <!-- List.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/list.js/2.3.1/list.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      new List('supplier-products-list', {
+        valueNames: ['product-name']
+      });
+    });
+  </script>
 {% endblock %}
