@@ -30,7 +30,7 @@ def diff_products(old_list, new_list):
               'last_change_recent': False
             })
         else:
-            # 24h boyunca is_new koru
+            # 24h boyunca bilgileri koru
             added_iso = old.get('added_date')
             p['is_new'] = bool(added_iso and (now - datetime.fromisoformat(added_iso) <= timedelta(hours=24)))
             if p['is_new']:

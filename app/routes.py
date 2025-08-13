@@ -2,17 +2,19 @@ import os
 import json
 import unicodedata
 import re
-from datetime import datetime, timedelta
+from datetime import datetime
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from .scraper import Scraper
 from .utils import diff_products
 
+# Flask Blueprint tanımı
 bp = Blueprint('main', __name__)
 DATA_DIR = 'data'
-# Ensure data directory exists
+
+# Veri klasörü yoksa oluştur
 os.makedirs(DATA_DIR, exist_ok=True)
 
-
+# Metni URL dostu slug formatına çeviren fonksiyon
 def slugify(text):
     text = unicodedata.normalize('NFKD', text)
     text = text.encode('ascii', 'ignore').decode('ascii')
@@ -20,7 +22,7 @@ def slugify(text):
     text = re.sub(r'[^a-zA-Z0-9_]', '', text)
     return text.lower()
 
-
+# Kayıtlı tedarikçi dosyalarını yükleyen fonksiyon
 def load_suppliers():
     suppliers = []
     for fname in sorted(f for f in os.listdir(DATA_DIR) if f.endswith('.json')):
@@ -38,10 +40,7 @@ def load_suppliers():
         })
     return suppliers
 
-
-
-
-
+# Ana sayfa rotası
 @bp.route('/', methods=['GET'])
 def index():
     suppliers = load_suppliers()
@@ -50,6 +49,7 @@ def index():
     changed_products = []
     now = datetime.now()
 
+    # Tedarikçi dosyalarındaki ürünleri okuma ve sınıflandırma
     for s in suppliers:
         path = os.path.join(DATA_DIR, s['json_file'])
         try:
@@ -67,6 +67,7 @@ def index():
             if p.get('is_removed'):
                 removed_products.append(entry)
 
+    # Ana sayfa şablonunu render etme
     return render_template(
         'index.html',
         suppliers=suppliers,
@@ -76,6 +77,7 @@ def index():
         changed_products=changed_products
     )
 
+# Yeni tedarikçi ekleme rotası
 @bp.route('/add_supplier', methods=['POST'])
 def add_supplier():
     url = request.form.get('url','').strip()
@@ -106,11 +108,12 @@ def add_supplier():
 
     return redirect(url_for('main.index'))
 
+# Tedarikçi detaylarını gösteren rota
 @bp.route('/supplier/<int:idx>/<slug>', methods=['GET'])
 def show_supplier(idx, slug):
     suppliers = load_suppliers()
 
-    # 1) bounds check
+    # Geçersiz indeks kontrolü
     if idx < 0 or idx >= len(suppliers):
         flash("Geçersiz seçim.", "warning")
         return redirect(url_for('main.index'))
@@ -121,7 +124,7 @@ def show_supplier(idx, slug):
 
     json_path = os.path.join(DATA_DIR, sel['json_file'])
 
-    # 2) Load existing JSON
+    # Eski ürün verilerini yükleme
     try:
         with open(json_path, 'r', encoding='utf-8') as f:
             data = json.load(f)
@@ -129,15 +132,13 @@ def show_supplier(idx, slug):
     except Exception:
         old_products = []
 
-    # 3) Decide whether to scrape (only when no filter param)
-    filter_type = request.args.get('filter')  # None or 'new'/'changed'/'removed'
+    # Filtre yoksa tedarikçiyi güncelle
+    filter_type = request.args.get('filter') 
     if not filter_type:
-        # full scrape+diff
         try:
             _, scraped = Scraper(sel['url']).scrape_all()
             merged = diff_products(old_products, scraped)
 
-            # overwrite JSON cache
             with open(json_path, 'w', encoding='utf-8') as f:
                 json.dump({
                     'supplier': sel['name'],
@@ -150,18 +151,17 @@ def show_supplier(idx, slug):
             flash(f"Güncellenirken hata: {e}", "danger")
             products_to_show = old_products
     else:
-        # just use the cache on filter clicks
         products_to_show = old_products
 
-    # 4) Now apply your Python‐side filter
+    # Filtreye göre ürünleri seç
     if filter_type == 'new':
         products_to_show = [p for p in products_to_show if p.get('is_new')]
     elif filter_type == 'changed':
         products_to_show = [p for p in products_to_show if p.get('last_change_recent')]
     elif filter_type == 'removed':
         products_to_show = [p for p in products_to_show if p.get('is_removed')]
-    # else filter_type is None or 'all' → leave full list
 
+    # Şablonu render etme
     return render_template(
         'supplier.html',
         suppliers=suppliers,
@@ -170,13 +170,12 @@ def show_supplier(idx, slug):
         products=products_to_show
     )
 
-
-
+# Ürün detaylarını gösteren rota
 @bp.route('/product/<product_code>')
 def product_detail(product_code):
     suppliers = load_suppliers()
 
-    # 1) Ürünü ve ana tedarikçiyi bul
+    # İlgili ürünü bulma
     found = None
     active_idx = None
     for idx, s in enumerate(suppliers):
@@ -195,7 +194,7 @@ def product_detail(product_code):
         flash("Ürün bulunamadı.", "warning")
         return redirect(url_for('main.index'))
 
-    # 2) Alternatif tedarikçileri topla (kaldırılmışları atla)
+    # Alternatif tedarikçileri bulma
     alt_suppliers = []
     for idx2, s2 in enumerate(suppliers):
         if idx2 == active_idx:
@@ -212,7 +211,7 @@ def product_detail(product_code):
                 })
                 break
 
-    # 3) Şablona gönder
+    # Ürün detay sayfasını render etme
     return render_template(
         'product_detail.html',
         suppliers=suppliers,
